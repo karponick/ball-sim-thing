@@ -1,0 +1,78 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://scripts/main.gd" type="Script" id=1]
+[ext_resource path="res://assets/303567.jpg" type="Texture" id=2]
+
+[node name="World" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="303567" type="Sprite" parent="."]
+position = Vector2( 200, 200 )
+scale = Vector2( 0.2, 0.3 )
+texture = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="."]
+margin_top = 386.0
+margin_right = 40.0
+margin_bottom = 400.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.1
+autostart = true
+
+[node name="Button" type="Button" parent="."]
+margin_right = 50.0
+margin_bottom = 20.0
+text = "Clear"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button2" type="Button" parent="."]
+margin_left = 50.0
+margin_right = 100.0
+margin_bottom = 20.0
+text = "+1"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button3" type="Button" parent="."]
+margin_left = 100.0
+margin_right = 150.0
+margin_bottom = 20.0
+text = "+10"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button4" type="Button" parent="."]
+margin_left = 150.0
+margin_right = 200.0
+margin_bottom = 20.0
+text = "Pretty"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HSlider" type="HSlider" parent="."]
+margin_left = 200.0
+margin_right = 400.0
+margin_bottom = 16.0
+max_value = 10.0
+value = 5.0
+tick_count = 10
+ticks_on_borders = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+[connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_Button2_pressed"]
+[connection signal="pressed" from="Button3" to="." method="_on_Button3_pressed"]
+[connection signal="pressed" from="Button4" to="." method="_on_Button4_pressed"]
+[connection signal="value_changed" from="HSlider" to="." method="_on_HSlider_value_changed"]
