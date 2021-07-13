@@ -6,11 +6,12 @@
 [sub_resource type="CircleShape2D" id=1]
 
 [node name="Ball" type="KinematicBody2D"]
+collision_mask = 3
 script = ExtResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
 texture = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-scale = Vector2( 1.61, 1.61 )
+scale = Vector2( 1.5, 1.5 )
 shape = SubResource( 1 )

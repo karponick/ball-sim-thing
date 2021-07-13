@@ -1,35 +1,42 @@
 extends KinematicBody2D
 
-var win_size = 400
-var ball_offset
-export var speed = 5
+var speed = 5
 var velocity = Vector2.ONE
-var sc = 0.5
+var min_scale = 0.8
+var max_scale = 1.6
 
-var colors = [Color(1,0,0,1), Color(0,1,0,1), Color(0,0,1,1)]
+var color_bounce = false
+var color_fade = false
+var fade_speed = 0.01
+var color_factor = 2
+
+var target_hue
+var vp
 
 func _ready():
 	randomize()
-	position = Vector2(200, 200)
+	vp = get_viewport()
+	position = Vector2(rand_range(0, vp.size.x), rand_range(0, vp.size.y))
 	rotation = rand_range(0, 360)
 	velocity = velocity.rotated(rotation).normalized()
-#	modulate = colors[randi() % colors.size()]
-	set_color()
-	sc = randf() * 0.5 + 0.5
-	scale = Vector2(sc, sc)
-	ball_offset = sc * 16
 	
-func _process(delta):
-	if position.x < ball_offset and velocity.x < 0:
-		velocity.x *= -1
-	if position.x > win_size - ball_offset and velocity.x > 0:
-		velocity.x *= -1
-	if position.y < ball_offset and velocity.y < 0:
-		velocity.y *= -1
-	if position.y > win_size - ball_offset and velocity.y > 0:
-		velocity.y *= -1
+	set_new_color()
+	target_hue = randf() * color_factor
 	
-	move2()
+	var ball_scale = randf() * (max_scale - 1) + min_scale
+	scale = Vector2(ball_scale, ball_scale)
+	
+func _physics_process(delta):
+	var collision = move_and_collide(velocity * speed)
+	if collision:
+		bounce_ball(collision)
+		if color_bounce:
+			set_new_color()
+	
+	position.x = clamp(position.x, 0, vp.size.x)
+	position.y = clamp(position.y, 0, vp.size.y)
+	if color_fade:
+		fade_ball()
 
 func get_velocity():
 	return velocity
@@ -37,17 +44,34 @@ func get_velocity():
 func set_speed(val):
 	speed = val
 
-func set_color():
-	modulate = Color(randf(), randf(), randf())
-
-func move1():
-	position.x += velocity.x
-	position.y += velocity.y
-	move_and_slide(velocity * speed)
+func set_color_bounce(val):
+	color_bounce = val
 	
-func move2():
-	var obj = move_and_collide(velocity * speed)
-	if obj:
-		var a_vel = obj.get_collider().get_velocity()
-		velocity.x *= a_vel.x / abs(a_vel.x)
-		velocity.y *= a_vel.y / abs(a_vel.y)
+func set_color_fade(val):
+	color_fade = val
+	
+func set_new_color():
+	modulate = generate_random_color()
+	
+func generate_random_color():
+	return Color.from_hsv(randf() * color_factor, 1, 1)
+	
+func bounce_ball(collision):
+	"""Reference: https://godotlearn.com/godot-3-1-how-to-move-objects/"""
+	look_at(collision.position + -collision.normal)
+	var reflect = collision.remainder.bounce(collision.normal)
+	velocity = velocity.bounce(collision.normal)
+	move_and_collide(reflect)
+
+func fade_ball():
+	if not hue_is_close(modulate.h, target_hue):
+		modulate.h = lerp(modulate.h, target_hue, fade_speed)
+	else:
+		target_hue = randf() * color_factor
+
+func hue_is_close(a, b):
+	if abs(a-b) < 0.1:
+		return true
+	return false
+	
+	
